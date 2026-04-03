@@ -20,7 +20,7 @@ Software still **does not** replace distribution, positioning, or judgment. It *
 
 | Phase | Focus |
 |-------|--------|
-| **Now** | Campaign + readiness + public URL + external checkout; local-first storage |
+| **Now** | Optional ICP discovery → campaign + readiness + public URL + external checkout; local-first storage |
 | **Next** | Synced storage, shareable URLs for buyers, accounts |
 | **Then** | Repeat campaigns, templates, light “what ran when” history |
 | **Later** | PMF / interview context on the same campaign; minimal analytics that support **decisions**, not vanity |

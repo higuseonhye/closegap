@@ -15,7 +15,7 @@ This document turns positioning into **build-ready** scope: flows, screens, data
 
 | Phase | What ships | Role in the workflow |
 |-------|------------|----------------------|
-| **A — Now (MVP)** | Time-boxed campaign, readiness gate, public page, external checkout link; local-first storage | **Sellable moment** + path to payment; smallest honest unit of “ready to charge” |
+| **A — Now (MVP)** | Optional **ICP discovery** (who to reach, outreach copy, demo hooks) → time-boxed campaign, readiness gate, public page, external checkout link; local-first storage | **Sellable moment** + path to payment; smallest honest unit of “ready to charge” |
 | **B** | Account + server / synced storage; shareable URLs for buyers | Unlocks **real** distribution of `/c/{slug}` |
 | **C** | Repeat campaigns, templates, light history (“what ran when”) | **Repeat & learn** toward traction |
 | **D** | PMF / interview context on campaign; minimal decision-grade metrics | **Signal + evidence** layer; still no guaranteed demand |

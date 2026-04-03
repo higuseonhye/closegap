@@ -2,7 +2,7 @@
 
 **Language:** English only.  
 **Repository:** [github.com/higuseonhye/closegap](https://github.com/higuseonhye/closegap)  
-**Last updated:** 2026-04-03
+**Last updated:** 2026-04-04
 
 ---
 
@@ -20,18 +20,29 @@ Founders often lose momentum because landing copy, scope, dates, and payment liv
 
 ## Product vision (north star)
 
-The long-term direction is a **single workflow toward traction**: from a sellable campaign through **first transaction**, then **repeat campaigns** and **light, truthful evidence**—not a separate “growth hacks” product. The current build is **phase A**: campaign + readiness + public page + external checkout. **Synced storage and accounts** are the next step so shared URLs work for any visitor. See [`FIRST_TRANSACTION_AND_TRACTION.md`](FIRST_TRANSACTION_AND_TRACTION.md) and [`PRD_AND_TECH_SPEC.md`](PRD_AND_TECH_SPEC.md) section 0.
+The long-term direction is a **single workflow toward traction**: from **ICP clarity** and a sellable campaign through **first transaction**, then **repeat campaigns** and **light, truthful evidence**—not a separate “growth hacks” product. The current build is **phase A**: optional **ICP discovery** → campaign + readiness + public page + external checkout (see below). **Synced storage and accounts (phase B)** are the next engineering priority so shared URLs work for any visitor. Phases **C–D** add repeatability and signal context; see [`FIRST_TRANSACTION_AND_TRACTION.md`](FIRST_TRANSACTION_AND_TRACTION.md) and [`PRD_AND_TECH_SPEC.md`](PRD_AND_TECH_SPEC.md) section 0.
 
 ---
 
 ## What ships today (MVP)
 
-- **Dashboard** — create campaigns (stored in-browser for this build).
+- **ICP discovery (optional)** — Starting at `/app/campaigns/new`: describe what you built → get **three ICP directions** with outreach copy and demo hooks → pick one to **seed** offer/audience lines and open the campaign workspace. **Skip** is available at `/app/campaigns/new/skip` for founders who already know their customer. *By default, ICP output uses **curated mock data** for reliable demos; an **Anthropic API** path exists for when you bring your own key—production-grade key handling should move server-side later.*
+- **Dashboard** — list campaigns (stored in-browser for this build).
 - **Campaign workspace** — pitch (offer + audience), price, window presets, scope, checkout URL, readiness panel, publish.
 - **Public page** — `/c/{slug}` when status is **live** or **ended**; draft/ready show a “not published” state.
 - **Stack** — Vite, React, TypeScript, Tailwind CSS; static deploy to Vercel-compatible hosts.
 
 **Limitation:** Data is **localStorage** in the creator’s browser until a backend ships. Demos and dogfooding work; **buyers on another device** need **Phase B** (sync) for a fully shared story.
+
+## What comes next (directional)
+
+| Phase | Focus |
+|-------|--------|
+| **B** | Accounts + server-backed storage so `/c/{slug}` is the same for every visitor. |
+| **C** | Repeat campaigns, templates, light history (“what ran when”). |
+| **D** | PMF / signal context on the campaign; minimal decision-grade metrics—still no guaranteed demand. |
+
+ICP generation will move from **mock + optional client API key** toward **safe server-side calls** (rate limits, no exposed secrets) when backend work lands.
 
 ---
 
