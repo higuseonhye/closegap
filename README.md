@@ -18,6 +18,7 @@ Early stage — product implementation in progress.
 
 - [`docs/APPLICATION_OVERVIEW.md`](docs/APPLICATION_OVERVIEW.md) — **single-page summary** (English) for applications and reviewers  
 - [`docs/PUBLIC_REPO_GUIDE.md`](docs/PUBLIC_REPO_GUIDE.md) — sharing this repo with programs (e.g. Canopy), what to trim or keep  
+- [`docs/CANOPY_APPLICATION_DRAFT.md`](docs/CANOPY_APPLICATION_DRAFT.md) — **Canopy application** copy-paste draft (English)  
 - [`docs/POSITIONING.md`](docs/POSITIONING.md) — positioning, copy, decision log  
 - [`docs/PRD_AND_TECH_SPEC.md`](docs/PRD_AND_TECH_SPEC.md) — PRD, flows, data model, readiness rules, and reuse map for existing repos  
 - [`docs/FIRST_TRANSACTION_AND_TRACTION.md`](docs/FIRST_TRANSACTION_AND_TRACTION.md) — first transaction vs traction, north star, “product only” stage  
