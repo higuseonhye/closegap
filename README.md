@@ -17,7 +17,8 @@ Built by **[ODD Playground](https://github.com/higuseonhye)**.
 Early stage — product implementation in progress.
 
 - [`docs/APPLICATION_OVERVIEW.md`](docs/APPLICATION_OVERVIEW.md) — **single-page summary** (English) for applications and reviewers  
-- [`docs/POSITIONING.md`](docs/POSITIONING.md) — positioning, copy, decision log  
+- **Ship checklist in the app:** `/app/ship` — Vercel deploy link, intro/demo scripts, checklists, optional screen recording (`.webm`).  
+- [`docs/POSITIONING.md`](POSITIONING.md) — positioning, copy, decision log  
 - [`docs/PRD_AND_TECH_SPEC.md`](docs/PRD_AND_TECH_SPEC.md) — PRD, flows, data model, readiness rules, and reuse map for existing repos  
 - [`docs/FIRST_TRANSACTION_AND_TRACTION.md`](docs/FIRST_TRANSACTION_AND_TRACTION.md) — first transaction vs traction, north star, “product only” stage  
 
@@ -38,7 +39,7 @@ npm install
 npm run dev
 ```
 
-Open the printed local URL (default `http://localhost:5173`). Campaigns are stored in **localStorage** in this browser.
+Open the printed local URL (default `http://localhost:5173`). Campaigns are stored in **localStorage** in this browser. Open **`/app/ship`** for the in-app deploy checklist and recording helper.
 
 ```bash
 npm run build

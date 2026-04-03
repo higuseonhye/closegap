@@ -114,7 +114,9 @@ Software **does not** guarantee a buyer’s yes; it **removes setup gaps** betwe
 |-----------------|--------|
 | **Marketing** | Headline, value prop, CTA (existing `public/` can evolve). |
 | **Dashboard / campaigns list** | List campaigns: name, status (draft / ready / live), last edited. |
+| **ICP discovery** | `/app/campaigns/new` — optional pre-workflow: product blurb → ICP options, outreach copy, seed campaign; `/app/campaigns/new/skip` bypasses. |
 | **Campaign workspace** | Tabs or sections: **Offer & window**, **Scope & terms**, **Payment**, **Readiness**, **Signals (optional)**. |
+| **Ship** | `/app/ship` — in-app deploy link (Vercel), intro/demo scripts, checklists (localStorage), optional screen recording to `.webm`. |
 | **Public campaign page** | Single scroll or short multi-section: hero offer, scope, dates, payment CTA, optional signal summary. |
 | **Settings (minimal)** | Profile display name, default currency, disconnect payment. |
 
@@ -265,7 +267,7 @@ Static positioning; superseded by client app.
 
 ### Phase 1 — MVP (current shipped scope)
 
-Campaign CRUD (local), workspace, readiness gate, public route `/c/{slug}`, publish states, external HTTPS checkout **or** publish-with-warnings; **localStorage**. Matches **North star phase A**. *Next unlock for the same story:* synced storage + auth (**phase B**).
+Campaign CRUD (local), optional **ICP discovery** entry, **Ship** checklist at `/app/ship`, workspace, readiness gate, public route `/c/{slug}`, publish states, external HTTPS checkout **or** publish-with-warnings; **localStorage**. Matches **North star phase A**. *Next unlock for the same story:* synced storage + auth (**phase B**).
 
 ### Phase 1b — Shareable truth (north star B)
 
