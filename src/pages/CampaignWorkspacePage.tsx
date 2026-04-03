@@ -167,6 +167,12 @@ export function CampaignWorkspacePage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              to={`/app/campaign/${c.id}/ship`}
+              className="rounded-md border border-border px-3 py-1.5 text-sm text-accent hover:border-accent/50"
+            >
+              Launch kit
+            </Link>
             <button
               type="button"
               onClick={() => {

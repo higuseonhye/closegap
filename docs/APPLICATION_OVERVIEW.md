@@ -31,7 +31,7 @@ The long-term direction is a **single workflow toward traction**: from **ICP cla
 - **Campaign workspace** — pitch (offer + audience), price, window presets, scope, checkout URL, readiness panel, publish.
 - **Public page** — `/c/{slug}` when status is **live** or **ended**; draft/ready show a “not published” state.
 - **Stack** — Vite, React, TypeScript, Tailwind CSS; static deploy to Vercel-compatible hosts.
-- **Ship** — `/app/ship`: Vercel deploy button, intro and demo copy, checklists (saved in-browser), optional screen recording to `.webm` for upload to Loom or similar.
+- **Launch kit** — `/app/ship` lists campaigns; each campaign has **`/app/campaign/{id}/ship`**: paste your **product GitHub repo**, local clone/run script, link to verify latest commits, **Vercel** deploy button for that repo, **Stripe test** Payment Link + “use as checkout”, intro/demo video URLs, copyable **intro & demo scripts**, **markdown link bundle** (repo, deploy, checkout, videos, public `/c/{slug}`), optional screen recording to `.webm`. Saved on the campaign in **localStorage**.
 
 **Limitation:** Data is **localStorage** in the creator’s browser until a backend ships. Demos and dogfooding work; **buyers on another device** need **Phase B** (sync) for a fully shared story.
 

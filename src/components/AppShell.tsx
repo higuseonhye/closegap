@@ -29,7 +29,7 @@ export function AppShell({
             Campaigns
           </Link>
           <Link to="/app/ship" className="text-muted hover:text-ink">
-            Ship
+            Launch
           </Link>
           <Link to="/" className="text-muted hover:text-ink">
             Home

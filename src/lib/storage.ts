@@ -1,3 +1,4 @@
+import { defaultShipKit, withShipKit } from "./shipKit";
 import type { Campaign } from "./types";
 import { makeUniqueSlug, shortId } from "./slug";
 
@@ -9,7 +10,7 @@ function loadRaw(): Campaign[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
-    return parsed as Campaign[];
+    return (parsed as Campaign[]).map((c) => withShipKit(c));
   } catch {
     return [];
   }
@@ -70,6 +71,7 @@ export function createDraftCampaign(title: string): Campaign {
     publishWithWarnings: true,
     createdAt: now,
     updatedAt: now,
+    shipKit: defaultShipKit(),
   };
   upsertCampaign(c);
   return c;

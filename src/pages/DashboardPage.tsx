@@ -29,7 +29,7 @@ export function DashboardPage() {
             to="/app/ship"
             className="text-sm text-muted hover:text-ink"
           >
-            Ship
+            Launch
           </Link>
           <button
             type="button"
@@ -61,20 +61,29 @@ export function DashboardPage() {
         <ul className="divide-y divide-border rounded-lg border border-border overflow-hidden">
           {campaigns.map((c) => (
             <li key={c.id}>
-              <Link
-                to={`/app/campaign/${c.id}`}
-                className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-white/5"
-              >
-                <div className="min-w-0">
+              <div className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-white/5">
+                <Link
+                  to={`/app/campaign/${c.id}`}
+                  className="min-w-0 flex-1"
+                >
                   <div className="font-medium text-ink truncate">{c.title}</div>
                   <div className="text-xs text-muted truncate">
                     /c/{c.slug} · updated {new Date(c.updatedAt).toLocaleString()}
                   </div>
+                </Link>
+                <div className="flex items-center gap-3 shrink-0">
+                  <Link
+                    to={`/app/campaign/${c.id}/ship`}
+                    className="text-xs text-accent hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Launch kit
+                  </Link>
+                  <span className="text-xs uppercase tracking-wide text-muted">
+                    {campaignStatusLabel(c.status)}
+                  </span>
                 </div>
-                <span className="text-xs uppercase tracking-wide text-muted shrink-0">
-                  {campaignStatusLabel(c.status)}
-                </span>
-              </Link>
+              </div>
             </li>
           ))}
         </ul>

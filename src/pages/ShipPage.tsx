@@ -1,29 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
-
-const STORAGE_KEY = "closegap_ship_checklist_v1";
-const VERCEL_DEPLOY =
-  "https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhiguseonhye%2Fclosegap&project-name=closegap&repository-name=closegap";
-const REPO = "https://github.com/higuseonhye/closegap";
-
-const INTRO_SCRIPT = `Hi, I'm Seonhye Gu, based in Seoul, building under ODD Playground.
-
-Closegap is for founders who have PMF-style signals but stall before first paid revenue—because offer, scope, and checkout live in different places.
-
-We assemble a time-boxed campaign in one flow: optional ICP discovery, then pitch, window, readiness, and a path to payment—without promising revenue we can't deliver.
-
-I'm pushing for a deployed URL strangers can try, and synced storage next so shared links work on any device.
-
-GitHub: higuseonhye/closegap — thank you.`;
-
-const DEMO_STEPS = `1. Open the app (deployed URL or localhost).
-2. Dashboard → New campaign → ICP discovery (/app/campaigns/new).
-3. Paste a short product description → Find ICPs → expand one ICP → optional Copy on a message.
-4. Start campaign for this ICP → campaign workspace (offer/audience seeded).
-5. Set price, window, scope, paste a Stripe Payment Link (test mode OK).
-6. Readiness → Publish → open public /c/{slug} in a new tab.
-7. Optional: from ICP page, click Skip — I already know my customer to show the alternate path.`;
+import { githubCommitsUrl, parseGithubRepo, vercelNewCloneUrl } from "@/lib/github";
+import {
+  buildDemoStepsTemplate,
+  buildIntroScriptTemplate,
+  buildLinkBundleMarkdown,
+  buildLocalCloneScript,
+} from "@/lib/shipKit";
+import { getCampaign, upsertCampaign } from "@/lib/storage";
+import type { Campaign, CampaignShipKit } from "@/lib/types";
 
 function pickRecorderMime(): string | undefined {
   const types = [
@@ -37,30 +23,6 @@ function pickRecorderMime(): string | undefined {
     }
   }
   return undefined;
-}
-
-function CheckRow({
-  id,
-  label,
-  checked,
-  onToggle,
-}: {
-  id: string;
-  label: string;
-  checked: boolean;
-  onToggle: (id: string) => void;
-}) {
-  return (
-    <label className="flex items-start gap-3 cursor-pointer group">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={() => onToggle(id)}
-        className="mt-1 rounded border-border bg-white/5 text-accent focus:ring-accent"
-      />
-      <span className="text-sm text-ink group-hover:text-ink/90">{label}</span>
-    </label>
-  );
 }
 
 function CopyBlock({ text, label }: { text: string; label: string }) {
@@ -86,7 +48,7 @@ function CopyBlock({ text, label }: { text: string; label: string }) {
   );
 }
 
-function ScreenRecorderHelper() {
+function ScreenRecorderHelper({ slug }: { slug: string }) {
   const [state, setState] = useState<"idle" | "recording" | "stopping">("idle");
   const [error, setError] = useState<string | null>(null);
   const recRef = useRef<MediaRecorder | null>(null);
@@ -136,7 +98,7 @@ function ScreenRecorderHelper() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `closegap-screen-${Date.now()}.webm`;
+        a.download = `campaign-${slug}-screen-${Date.now()}.webm`;
         a.click();
         URL.revokeObjectURL(url);
         stream.getTracks().forEach((t) => t.stop());
@@ -157,9 +119,8 @@ function ScreenRecorderHelper() {
   return (
     <div className="rounded-lg border border-border p-4 space-y-3">
       <p className="text-sm text-muted">
-        Records your screen + tab audio (browser will ask which screen or window). Downloads a{" "}
-        <strong className="text-ink">.webm</strong> file when you stop. Upload that file to Loom,
-        Descript, or convert to MP4 locally if your program requires MP4.
+        Records screen + tab audio. Downloads <strong className="text-ink">.webm</strong> — upload to
+        Loom/YouTube and paste URLs above.
       </p>
       <div className="flex flex-wrap gap-2">
         {state === "idle" ? (
@@ -177,7 +138,7 @@ function ScreenRecorderHelper() {
             disabled={state === "stopping"}
             className="rounded-md border border-red-400/50 text-red-300 px-3 py-1.5 text-sm hover:bg-red-500/10 disabled:opacity-50"
           >
-            {state === "stopping" ? "Finishing…" : "Stop & download .webm"}
+            {state === "stopping" ? "Finishing…" : "Stop & download"}
           </button>
         )}
       </div>
@@ -188,162 +149,350 @@ function ScreenRecorderHelper() {
   );
 }
 
-const DEPLOY_IDS = [
-  "d1",
-  "d2",
-  "d3",
-  "d4",
-  "d5",
-  "d6",
-] as const;
-const INTRO_IDS = ["i1", "i2", "i3", "i4", "i5"] as const;
-const DEMO_IDS = ["m1", "m2", "m3", "m4", "m5"] as const;
-
-const DEPLOY_LABELS: Record<(typeof DEPLOY_IDS)[number], string> = {
-  d1: "Open the Deploy flow and connect the GitHub repo (or import this clone URL).",
-  d2: "Framework: Vite — or Other with Build: npm run build, Output: dist.",
-  d3: "First production deploy succeeded; SPA routes work (vercel.json rewrites).",
-  d4: "Copied the production URL (e.g. https://….vercel.app) for your application form.",
-  d5: "Understood: campaign data stays in localStorage per browser until you ship Phase B sync.",
-  d6: "Optional: set a custom domain in Vercel when ready.",
-};
-
-const INTRO_LABELS: Record<(typeof INTRO_IDS)[number], string> = {
-  i1: "Quiet space, face visible, mic tested (30–60s target).",
-  i2: "Recorded intro using the script below (or your own words, same facts).",
-  i3: "Uploaded to Loom or YouTube (unlisted is fine).",
-  i4: "Pasted the video URL into your application form.",
-  i5: "Optional: subtitles or captions for reviewers.",
-};
-
-const DEMO_LABELS: Record<(typeof DEMO_IDS)[number], string> = {
-  m1: "Deployed URL or localhost ready; Stripe test Payment Link prepared if showing checkout.",
-  m2: "Recorded screen following the demo steps below (3–5 min).",
-  m3: "Showed ICP discovery + at least one path to publish + public /c/ page.",
-  m4: "Uploaded demo video; pasted URL into the form.",
-  m5: "If file was .webm: converted or re-uploaded via a host that gives a shareable link.",
-};
+function StepCheck({
+  checked,
+  label,
+  onChange,
+}: {
+  checked: boolean;
+  label: string;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label className="flex items-start gap-3 cursor-pointer group">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-1 rounded border-border bg-white/5 text-accent"
+      />
+      <span className="text-sm text-ink">{label}</span>
+    </label>
+  );
+}
 
 export function ShipPage() {
-  const [checks, setChecks] = useState<Record<string, boolean>>({});
+  const { id } = useParams<{ id: string }>();
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [missing, setMissing] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setChecks(JSON.parse(raw) as Record<string, boolean>);
-    } catch {
-      /* ignore */
+    if (!id) {
+      setMissing(true);
+      return;
     }
-  }, []);
+    const c = getCampaign(id);
+    if (!c) {
+      setMissing(true);
+      return;
+    }
+    setCampaign(c);
+    setMissing(false);
+  }, [id]);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(checks));
-  }, [checks]);
-
-  function toggle(id: string) {
-    setChecks((c) => ({ ...c, [id]: !c[id] }));
+  function patchCampaign(next: Campaign) {
+    upsertCampaign(next);
+    setCampaign(next);
   }
 
+  function updateKit(patch: Partial<CampaignShipKit>) {
+    if (!campaign) return;
+    const sk = campaign.shipKit;
+    const nextKit: CampaignShipKit = {
+      ...sk,
+      ...patch,
+      steps: patch.steps ? { ...sk.steps, ...patch.steps } : sk.steps,
+    };
+    patchCampaign({
+      ...campaign,
+      shipKit: nextKit,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  function applyStripeToCheckout() {
+    if (!campaign) return;
+    const url = campaign.shipKit.stripeTestUrl.trim();
+    if (!url) {
+      window.alert("Paste a Stripe Payment Link (test mode) first.");
+      return;
+    }
+    try {
+      const u = new URL(url);
+      if (u.protocol !== "https:") {
+        window.alert("Use a full https:// Stripe link.");
+        return;
+      }
+    } catch {
+      window.alert("That doesn’t look like a valid URL.");
+      return;
+    }
+    patchCampaign({
+      ...campaign,
+      paymentProvider: "external_url",
+      paymentUrl: url,
+      shipKit: {
+        ...campaign.shipKit,
+        steps: { ...campaign.shipKit.steps, stripeLinked: true },
+      },
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  if (!id || missing) {
+    return <Navigate to="/app/ship" replace />;
+  }
+  if (!campaign) {
+    return (
+      <AppShell>
+        <p className="text-muted">Loading…</p>
+      </AppShell>
+    );
+  }
+
+  const c = campaign;
+  const kit = c.shipKit;
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const publicUrl = `${origin}/c/${c.slug}`;
+  const repoParsed = kit.repoUrl.trim() ? parseGithubRepo(kit.repoUrl) : null;
+  const cloneScript = repoParsed ? buildLocalCloneScript(repoParsed.httpsUrl) : "";
+  const vercelUrl = repoParsed ? vercelNewCloneUrl(`${repoParsed.httpsUrl}.git`) : null;
+  const commitsUrl = repoParsed ? githubCommitsUrl(repoParsed.httpsUrl) : null;
+  const bundle = buildLinkBundleMarkdown(c, kit, origin);
+  const introScript = buildIntroScriptTemplate(c, repoParsed?.httpsUrl ?? null, publicUrl);
+  const demoSteps = buildDemoStepsTemplate(c.slug);
+
   return (
-    <AppShell title="Ship" wide>
+    <AppShell title={`Launch · ${c.title}`} wide>
       <div className="space-y-10">
-        <div>
-          <h1 className="text-xl font-semibold text-ink">Ship checklist</h1>
-          <p className="text-sm text-muted mt-1 max-w-2xl">
-            Deploy Closegap, record an intro and a product demo, then paste URLs into your program
-            application. Progress is saved in <strong className="text-ink">this browser</strong>{" "}
-            only.
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold text-ink">Launch kit</h1>
+            <p className="text-sm text-muted mt-1 max-w-2xl">
+              Wire your <strong className="text-ink">product repo</strong> to this campaign: preview
+              locally, confirm you’re on the latest commit, deploy, add a Stripe test link, drop intro/demo
+              URLs, then copy one markdown block into your application or outreach.
+            </p>
+          </div>
+          <Link
+            to={`/app/campaign/${c.id}`}
+            className="rounded-md border border-border px-3 py-1.5 text-sm text-accent hover:border-accent/60 shrink-0"
+          >
+            ← Campaign workspace
+          </Link>
         </div>
 
-        {/* Deploy */}
-        <section className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
-            1. Deploy (Vercel)
-          </h2>
-          <p className="text-sm text-muted">
-            Connect GitHub and deploy automatically on every push. Repository:{" "}
-            <a href={REPO} className="text-accent hover:underline" target="_blank" rel="noreferrer">
-              {REPO}
-            </a>
-          </p>
-          <a href={VERCEL_DEPLOY} target="_blank" rel="noreferrer">
-            <img
-              src="https://vercel.com/button"
-              alt="Deploy with Vercel"
-              width={116}
-              height={36}
-            />
-          </a>
-          <div className="space-y-2">
-            {DEPLOY_IDS.map((id) => (
-              <CheckRow
-                key={id}
-                id={id}
-                label={DEPLOY_LABELS[id]}
-                checked={!!checks[id]}
-                onToggle={toggle}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* Intro */}
-        <section className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
-            2. Intro video (~45s)
-          </h2>
-          <div className="space-y-2">
-            {INTRO_IDS.map((id) => (
-              <CheckRow
-                key={id}
-                id={id}
-                label={INTRO_LABELS[id]}
-                checked={!!checks[id]}
-                onToggle={toggle}
-              />
-            ))}
-          </div>
-          <CopyBlock text={INTRO_SCRIPT} label="Copy script" />
-        </section>
-
-        {/* Demo */}
-        <section className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
-            3. Demo video (~3–5 min)
-          </h2>
-          <div className="space-y-2">
-            {DEMO_IDS.map((id) => (
-              <CheckRow
-                key={id}
-                id={id}
-                label={DEMO_LABELS[id]}
-                checked={!!checks[id]}
-                onToggle={toggle}
-              />
-            ))}
-          </div>
-          <CopyBlock text={DEMO_STEPS} label="Copy steps" />
-        </section>
-
-        {/* Screen recorder */}
+        {/* 1 GitHub */}
         <section className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
-            4. Screen recording (optional)
+            1. GitHub repository
           </h2>
-          <ScreenRecorderHelper />
+          <label className="block">
+            <span className="text-xs text-muted uppercase tracking-wide">HTTPS URL</span>
+            <input
+              type="url"
+              value={kit.repoUrl}
+              onChange={(e) => updateKit({ repoUrl: e.target.value })}
+              placeholder="https://github.com/you/your-product"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-ink"
+            />
+          </label>
+          {!repoParsed && kit.repoUrl.trim() ? (
+            <p className="text-xs text-amber-400">Couldn’t parse a GitHub owner/repo from this URL.</p>
+          ) : null}
+          {commitsUrl ? (
+            <a
+              href={commitsUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm text-accent hover:underline"
+            >
+              Open commit history (verify latest)
+            </a>
+          ) : null}
+        </section>
+
+        {/* 2 Local */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            2. Local preview
+          </h2>
+          <p className="text-sm text-muted">
+            Clone and run in your terminal. Adjust commands if your repo uses pnpm/yarn or a different dev
+            script.
+          </p>
+          <CopyBlock text={cloneScript || "# Set a valid GitHub HTTPS URL in step 1"} label="Copy" />
+          <StepCheck
+            checked={kit.steps.localPreviewDone}
+            label="I ran the app locally and clicked through my product."
+            onChange={(v) => updateKit({ steps: { ...kit.steps, localPreviewDone: v } })}
+          />
+        </section>
+
+        {/* 3 Sync */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            3. Sync with GitHub
+          </h2>
+          <p className="text-sm text-muted">
+            Pull the latest default branch before recording demos or deploying.
+          </p>
+          <StepCheck
+            checked={kit.syncedLatestConfirmed}
+            label="I pulled the latest from my team / main branch."
+            onChange={(v) => updateKit({ syncedLatestConfirmed: v, steps: { ...kit.steps, syncVerified: v } })}
+          />
+        </section>
+
+        {/* 4 Vercel */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            4. Deploy (Vercel)
+          </h2>
+          {vercelUrl ? (
+            <a href={vercelUrl} target="_blank" rel="noreferrer">
+              <img
+                src="https://vercel.com/button"
+                alt="Deploy with Vercel"
+                width={116}
+                height={36}
+              />
+            </a>
+          ) : (
+            <p className="text-sm text-muted">Add a GitHub URL above to generate a deploy button.</p>
+          )}
+          <label className="block">
+            <span className="text-xs text-muted uppercase tracking-wide">Production / preview URL</span>
+            <input
+              type="url"
+              value={kit.deployUrl}
+              onChange={(e) => updateKit({ deployUrl: e.target.value })}
+              placeholder="https://your-app.vercel.app"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-ink"
+            />
+          </label>
+          <StepCheck
+            checked={kit.steps.deployDone}
+            label="Deploy works; client routes behave like production (SPA rewrites)."
+            onChange={(v) => updateKit({ steps: { ...kit.steps, deployDone: v } })}
+          />
+        </section>
+
+        {/* 5 Stripe */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            5. Stripe test checkout
+          </h2>
+          <p className="text-sm text-muted">
+            Create a Payment Link in Stripe Dashboard (test mode). Paste it here, then push it into this
+            campaign’s checkout field.
+          </p>
+          <label className="block">
+            <span className="text-xs text-muted uppercase tracking-wide">Stripe Payment Link (test)</span>
+            <input
+              type="url"
+              value={kit.stripeTestUrl}
+              onChange={(e) => updateKit({ stripeTestUrl: e.target.value })}
+              placeholder="https://buy.stripe.com/test_..."
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-ink"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={applyStripeToCheckout}
+            className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-black hover:opacity-90"
+          >
+            Use as campaign checkout URL
+          </button>
+          <StepCheck
+            checked={kit.steps.stripeLinked}
+            label="This URL is also set on the campaign workspace (or I’ll paste manually)."
+            onChange={(v) => updateKit({ steps: { ...kit.steps, stripeLinked: v } })}
+          />
+        </section>
+
+        {/* 6 Videos */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            6. Intro & demo videos
+          </h2>
+          <label className="block">
+            <span className="text-xs text-muted uppercase tracking-wide">Intro (Loom / YouTube)</span>
+            <input
+              type="url"
+              value={kit.introVideoUrl}
+              onChange={(e) => updateKit({ introVideoUrl: e.target.value })}
+              placeholder="https://..."
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-ink"
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs text-muted uppercase tracking-wide">Product demo</span>
+            <input
+              type="url"
+              value={kit.demoVideoUrl}
+              onChange={(e) => updateKit({ demoVideoUrl: e.target.value })}
+              placeholder="https://..."
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-ink"
+            />
+          </label>
+          <StepCheck
+            checked={kit.steps.videosReady}
+            label="Both URLs are shareable (unlisted OK)."
+            onChange={(v) => updateKit({ steps: { ...kit.steps, videosReady: v } })}
+          />
+        </section>
+
+        {/* Scripts */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            Scripts (optional)
+          </h2>
+          <p className="text-xs text-muted">Tied to this campaign’s title, offer, and public URL.</p>
+          <p className="text-xs font-medium text-ink">Intro (~45s)</p>
+          <CopyBlock text={introScript} label="Copy intro" />
+          <p className="text-xs font-medium text-ink pt-2">Demo flow</p>
+          <CopyBlock text={demoSteps} label="Copy demo outline" />
+        </section>
+
+        {/* Screen record */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            Screen recording
+          </h2>
+          <ScreenRecorderHelper slug={c.slug} />
+        </section>
+
+        {/* Notes + bundle */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">
+            Notes & link bundle
+          </h2>
+          <label className="block">
+            <span className="text-xs text-muted uppercase tracking-wide">Private notes</span>
+            <textarea
+              value={kit.notes}
+              onChange={(e) => updateKit({ notes: e.target.value })}
+              rows={3}
+              placeholder="Deadlines, program name, things to mention in the pitch…"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-ink resize-y"
+            />
+          </label>
+          <p className="text-sm text-muted">
+            Paste the block below into Notion, your application form, or investor email — it includes repo,
+            local commands, deploy, Stripe, videos, and your public campaign URL.
+          </p>
+          <CopyBlock text={bundle} label="Copy link bundle" />
         </section>
 
         <p className="text-xs text-muted border-t border-border pt-6">
-          Back to{" "}
+          <Link to="/app/ship" className="text-accent hover:underline">
+            All launch kits
+          </Link>
+          {" · "}
           <Link to="/app" className="text-accent hover:underline">
             Campaigns
-          </Link>{" "}
-          or{" "}
-          <Link to="/app/campaigns/new" className="text-accent hover:underline">
-            New campaign
           </Link>
-          .
         </p>
       </div>
     </AppShell>
