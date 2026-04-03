@@ -17,6 +17,7 @@ Built by **[ODD Playground](https://github.com/higuseonhye)**.
 Early stage — product implementation in progress.
 
 - [`docs/APPLICATION_OVERVIEW.md`](docs/APPLICATION_OVERVIEW.md) — **single-page summary** (English) for applications and reviewers  
+- [`docs/CANOPY_APPLICATION_DRAFT.md`](docs/CANOPY_APPLICATION_DRAFT.md) — optional draft answers for Canopy / similar programs (English)  
 - [`docs/POSITIONING.md`](docs/POSITIONING.md) — positioning, copy, decision log  
 - [`docs/PRD_AND_TECH_SPEC.md`](docs/PRD_AND_TECH_SPEC.md) — PRD, flows, data model, readiness rules, and reuse map for existing repos  
 - [`docs/FIRST_TRANSACTION_AND_TRACTION.md`](docs/FIRST_TRANSACTION_AND_TRACTION.md) — first transaction vs traction, north star, “product only” stage  

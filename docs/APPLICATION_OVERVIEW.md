@@ -2,7 +2,7 @@
 
 **Language:** English only.  
 **Repository:** [github.com/higuseonhye/closegap](https://github.com/higuseonhye/closegap)  
-**Last updated:** 2026-04-04
+**Last updated:** 2026-04-03
 
 ---
 
@@ -48,6 +48,7 @@ It implements the **smallest honest unit** of the north star: a **publishable se
 | [`POSITIONING.md`](POSITIONING.md) | Copy, ICP, what we are / aren’t, north star (short) |
 | [`PRD_AND_TECH_SPEC.md`](PRD_AND_TECH_SPEC.md) | Flows, data model, phased roadmap, MVP fitness vs north star |
 | [`FIRST_TRANSACTION_AND_TRACTION.md`](FIRST_TRANSACTION_AND_TRACTION.md) | Transaction vs traction, “product only” stage, full north star |
+| [`CANOPY_APPLICATION_DRAFT.md`](CANOPY_APPLICATION_DRAFT.md) | Optional: English draft answers for Canopy-style forms (keep in sync with this overview) |
 
 ---
 
