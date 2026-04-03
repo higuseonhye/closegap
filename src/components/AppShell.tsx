@@ -4,9 +4,12 @@ import { Link } from "react-router-dom";
 export function AppShell({
   children,
   title,
+  wide,
 }: {
   children: ReactNode;
   title?: string;
+  /** Wider main column for long-form copy (e.g. Ship checklist). */
+  wide?: boolean;
 }) {
   return (
     <div className="min-h-screen flex flex-col">
@@ -25,12 +28,19 @@ export function AppShell({
           <Link to="/app" className="text-muted hover:text-ink">
             Campaigns
           </Link>
+          <Link to="/app/ship" className="text-muted hover:text-ink">
+            Ship
+          </Link>
           <Link to="/" className="text-muted hover:text-ink">
             Home
           </Link>
         </nav>
       </header>
-      <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-8">{children}</main>
+      <main
+        className={`flex-1 w-full mx-auto px-4 py-8 ${wide ? "max-w-4xl" : "max-w-3xl"}`}
+      >
+        {children}
+      </main>
     </div>
   );
 }

@@ -24,7 +24,13 @@ export function DashboardPage() {
             Stored in this browser (localStorage). Export/backup coming later.
           </p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 items-center">
+          <Link
+            to="/app/ship"
+            className="text-sm text-muted hover:text-ink"
+          >
+            Ship
+          </Link>
           <button
             type="button"
             onClick={refresh}
