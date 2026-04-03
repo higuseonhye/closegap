@@ -1,9 +1,42 @@
 # Closegap — PRD & technical specification
 
-**Last updated:** 2026-04-03  
-**Companion docs:** [`POSITIONING.md`](POSITIONING.md) (copy, ICP, decision log)
+**Last updated:** 2026-04-04  
+**Companion docs:** [`POSITIONING.md`](POSITIONING.md) (copy, ICP, north star) · [`FIRST_TRANSACTION_AND_TRACTION.md`](FIRST_TRANSACTION_AND_TRACTION.md) (first transaction vs traction, product-only stage, full north star narrative)
 
 This document turns positioning into **build-ready** scope: flows, screens, data, integrations, readiness rules, and **explicit reuse** of your existing repositories.
+
+---
+
+## 0. North star — workflow to traction
+
+**Aspirational product:** Closegap should cover a **single founder workflow** from **signals / ICP** through **sellable campaign** → **first transaction** → **repeat** → **honest traction evidence**—without becoming a fake growth platform. Full narrative and boundaries: [`FIRST_TRANSACTION_AND_TRACTION.md`](FIRST_TRANSACTION_AND_TRACTION.md) (section *North star: cover the workflow to traction*). Positioning line: [`POSITIONING.md`](POSITIONING.md) (*North star (workflow to traction)*).
+
+**Directional phases (same product, expanding scope):**
+
+| Phase | What ships | Role in the workflow |
+|-------|------------|----------------------|
+| **A — Now (MVP)** | Time-boxed campaign, readiness gate, public page, external checkout link; local-first storage | **Sellable moment** + path to payment; smallest honest unit of “ready to charge” |
+| **B** | Account + server / synced storage; shareable URLs for buyers | Unlocks **real** distribution of `/c/{slug}` |
+| **C** | Repeat campaigns, templates, light history (“what ran when”) | **Repeat & learn** toward traction |
+| **D** | PMF / interview context on campaign; minimal decision-grade metrics | **Signal + evidence** layer; still no guaranteed demand |
+
+Software never replaces **distribution** or **judgment**; it **assembles** gaps along this path.
+
+---
+
+## 0.1 MVP fitness — is the current product an adequate starting point?
+
+**Verdict: yes — the current build is an appropriate MVP wedge** relative to the north star.
+
+| Criterion | Assessment |
+|-----------|------------|
+| **Aligns with north star spine** | The MVP delivers the **sellable moment** (offer, scope, window, readiness, payment block)—the **first expandable core** in the phased table. Later phases attach to the same **campaign** concept instead of a pivot. |
+| **Small enough** | It avoids premature **traction dashboards**, **CRM**, or **heavy PMF import** before the founder can complete **one** publish → pay path (even if storage is local for now). |
+| **Wrong MVP would have been** | Building “traction” UI first, or full signal ingestion, before proving **campaign + publish + checkout assembly** works end-to-end. |
+| **Known gaps (acceptable for MVP label)** | **localStorage** means buyers on other devices don’t see data—**Phase B (sync)** is the next unlock for the same story, not a different product. No **campaign duplicate / history** yet—listed for Phase C. |
+| **When to reassess** | If ICP needs **server-backed sharing** before any demo, prioritize **Phase B**; if the team can demo on one machine or screen-share, **Phase A** remains a valid ship. |
+
+**Summary:** The MVP is **narrow on purpose** and **on the critical path** to the north star. The next dollars in engineering should follow **B → C → D**, not parallel “traction features” that skip a working sell loop.
 
 ---
 
@@ -224,17 +257,23 @@ Governance / evaluation patterns from **AgentOS** and **agent-eval** repos apply
 
 ## 11. Phased delivery
 
-### Phase 0 — Skeleton (current repo)
+Aligned with **§0 North star** (A–D). Labels below map to implementation reality + original roadmap.
 
-Static positioning + placeholder UI.
+### Phase 0 — Skeleton (done)
 
-### Phase 1 — MVP (ship)
+Static positioning; superseded by client app.
 
-Auth (or scoped token), campaign CRUD, generated public page, readiness gate, Stripe **or** external URL.
+### Phase 1 — MVP (current shipped scope)
 
-### Phase 2 — Signals
+Campaign CRUD (local), workspace, readiness gate, public route `/c/{slug}`, publish states, external HTTPS checkout **or** publish-with-warnings; **localStorage**. Matches **North star phase A**. *Next unlock for the same story:* synced storage + auth (**phase B**).
 
-Import + [`judgement-engine`](https://github.com/higuseonhye/judgement-engine)-style analysis + short narrative on campaign.
+### Phase 1b — Shareable truth (north star B)
+
+Auth (or scoped token), backend or BaaS, campaigns persisted per user; public URLs work for **any** visitor. Stripe webhooks optional.
+
+### Phase 2 — Repeat & signals (north star C–D)
+
+Duplicate / template campaigns, light history; optional PMF / interview import + [`judgement-engine`](https://github.com/higuseonhye/judgement-engine)-style summary on campaign.
 
 ### Phase 3 — Team & polish
 
@@ -321,3 +360,4 @@ Use this table when deciding **library reuse**, **API contracts**, or **which pr
 | Date | Change |
 |------|--------|
 | 2026-04-03 | Initial PRD + tech spec + repo matrix |
+| 2026-04-04 | Added §0 North star, §0.1 MVP fitness vs north star; phased delivery aligned to A–D |

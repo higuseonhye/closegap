@@ -1,6 +1,6 @@
 # Closegap — product & company copy (ready to use)
 
-**Last updated:** 2026-04-03
+**Last updated:** 2026-04-04
 
 ---
 
@@ -39,6 +39,12 @@
 
 Software that reduces the distance to your first paid customer or first meaningful contract—by assembling campaign, scope, and payment in one flow for pre-seed and seed teams.
 
+### North star (workflow to traction)
+
+**Aspirational product:** Closegap should **cover the workflow that leads to traction**, not stop at a single page. Same founder journey: from **first meaningful transaction** through **repeatable sell moments** and **honest proof** (what worked, what to run again)—without becoming a fake “guaranteed growth” tool.
+
+**Today vs later:** The MVP is the **first wedge** (time-boxed campaign, readiness, checkout assembly). Roadmap layers add **repeat campaigns**, **shared/public data**, **signal context** (e.g. PMF notes), and **light evidence of momentum**—still bounded by what software can truthfully assemble. Details: [`docs/FIRST_TRANSACTION_AND_TRACTION.md`](FIRST_TRANSACTION_AND_TRACTION.md) (North star section).
+
 ---
 
 ## What we are / aren’t
@@ -72,7 +78,7 @@ Software that reduces the distance to your first paid customer or first meaningf
 
 ## Next implementation steps (when you build)
 
-Detailed flows, fields, readiness rules, integrations, and **repository reuse** are in **[`PRD_AND_TECH_SPEC.md`](PRD_AND_TECH_SPEC.md)**.
+Detailed flows, fields, readiness rules, integrations, and **repository reuse** are in **[`PRD_AND_TECH_SPEC.md`](PRD_AND_TECH_SPEC.md)**. How **first transaction** relates to **traction** and when Closegap fits is in **[`FIRST_TRANSACTION_AND_TRACTION.md`](FIRST_TRANSACTION_AND_TRACTION.md)**.
 
 1. Onboarding: collect **minimum inputs** (offer one-liner, price, window, audience).
 2. Generate **landing + scope page + payment block** from templates.

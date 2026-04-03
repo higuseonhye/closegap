@@ -120,14 +120,20 @@ export function PublicCampaignPage() {
         </div>
 
         {!isEnded && payUrl ? (
-          <a
-            href={payUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex w-full sm:w-auto justify-center rounded-md bg-accent px-6 py-3 text-base font-medium text-black hover:opacity-90"
-          >
-            Pay / checkout
-          </a>
+          <div className="space-y-2">
+            <a
+              href={payUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-full sm:w-auto justify-center rounded-md bg-accent px-6 py-3 text-base font-medium text-black hover:opacity-90"
+            >
+              Pay / checkout
+            </a>
+            <p className="text-xs text-muted">
+              Opens your payment provider in a new tab (e.g. Stripe, Lemon, Gumroad). You complete
+              checkout on their site.
+            </p>
+          </div>
         ) : !isEnded ? (
           <p className="text-sm text-muted">Payment link not configured yet.</p>
         ) : null}
